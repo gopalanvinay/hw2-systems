@@ -1,4 +1,5 @@
 #include "cache.hh"
+#include "cache_lib.hh"
 #include <assert.h>
 #include <unordered_map>
 
@@ -37,12 +38,7 @@ class Cache::Impl {
 
     // Delete an object from the cache, if it's still there
     bool del(key_type key) {
-        if (table[key] == 0) {
-            return false;
-        } else {
-            table.erase(key);
-            return true;
-        }
+        return table.erase(key);
     }
 
     // Compute the total amount of memory used up by all cache values (not keys)
@@ -97,12 +93,4 @@ Cache::space_used() const {
 void
 Cache::reset(){
     Cache::pImpl_->reset();
-}
-
-
-// Main
-int
-main()
-{
-    return 0;
 }
