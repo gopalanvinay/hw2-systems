@@ -64,6 +64,8 @@ Cache::Cache(size_type maxmem,
             hash_func hasher)
     : pImpl_(new Impl()) {}
 
+Cache::~Cache() = default;
+
 void Cache::set(key_type key, val_type val, size_type size) {
     Cache::pImpl_->set(key, val, size);
 }
