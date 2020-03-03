@@ -1,5 +1,5 @@
 #include "cache.hh"
-#include "cache_lib.hh"
+//#include "cache_lib.hh"
 #include <assert.h>
 #include <unordered_map>
 
@@ -64,33 +64,28 @@ Cache::Cache(size_type maxmem,
             hash_func hasher)
     : pImpl_(new Impl()) {}
 
-void
-Cache::set(key_type key, val_type val, size_type size) {
+void Cache::set(key_type key, val_type val, size_type size) {
     Cache::pImpl_->set(key, val, size);
 }
 
 // Retrieve a pointer to the value associated with key in the cache,
 // or nullptr if not found.
 // Sets the actual size of the returned value (in bytes) in val_size.
-Cache::val_type
-Cache::get(key_type key, Cache::size_type& val_size) const {
+Cache::val_type Cache::get(key_type key, Cache::size_type& val_size) const {
     return Cache::pImpl_->get(key, val_size);
 }
 
 // Delete an object from the cache, if it's still there
-bool
-Cache::del(key_type key){
+bool Cache::del(key_type key){
     return Cache::pImpl_->del(key);
 }
 
 // Compute the total amount of memory used up by all cache values (not keys)
-Cache::size_type
-Cache::space_used() const {
+Cache::size_type Cache::space_used() const {
     return Cache::pImpl_->space_used();
 }
 
 // Delete all data from the cache
-void
-Cache::reset(){
+void Cache::reset(){
     Cache::pImpl_->reset();
 }
