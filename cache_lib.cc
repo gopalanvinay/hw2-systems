@@ -16,7 +16,7 @@ class Cache::Impl {
     // from the cache to accomodate the new value. If unable, the new value
     // isn't inserted to the cache.
     void set(key_type key, val_type val, size_type size) {
-        if (space_used() + sizeof(val_type) < size)  {
+        if (space_used() + sizeof(val_type) <= size)  {
             val_type to_copy = val;
             table[key] = to_copy; // check this behavior
         }
@@ -28,7 +28,7 @@ class Cache::Impl {
     // Sets the actual size of the returned value (in bytes) in val_size.
     val_type get(key_type key, size_type& val_size) const {
         // table.at() returns a reference to the value
-        if (table.at(key) != nullptr) {
+        if (table.count(key) != 0) {
             val_size = sizeof(table.at(key));
             return table.at(key); // check pointer v reference here
         } else {
