@@ -4,8 +4,12 @@
 
 class Cache::Impl {
  private:
-   // data structure
-   std::unordered_map<key_type, val_type> table;
+   // private data structure
+   Evictor* evictor;
+   float max_load_factor;
+   hash_func hasher;
+   size_type maxmem;
+   std::unordered_map<key_type, val_type, hash_func> table(maxmem, hasher);
 
  public:
     // Add a <key, value> pair to the cache.
@@ -15,9 +19,9 @@ class Cache::Impl {
     // from the cache to accomodate the new value. If unable, the new value
     // isn't inserted to the cache.
     void set(key_type key, val_type val, size_type size) {
-        if (space_used() + sizeof(val_type) <= size)  {
-            val_type to_copy = val;
-            table[key] = to_copy; // check this behavior
+        if (space_used() + size <= maxmem)  {
+            //val_type to_copy = val;
+            table[key] = val; // check this behavior
         }
         // don't add into hash table
     }
@@ -42,13 +46,21 @@ class Cache::Impl {
 
     // Compute the total amount of memory used up by all cache values (not keys)
     size_type space_used() const {
-        return table.size() * sizeof(val_type);
+        return table.size() * sizeof(val_type); // nope
     }
 
     // Delete all data from the cache
     void reset() {
         table.clear();
     }
+
+    Impl(size_type maxmem,
+          float max_load_factor,
+          Evictor* evictor,
+          hash_func hasher) : maxmem(maxmem),
+                max_load_factor(max_load_factor),
+                evictor(evictor),
+                hasher(hasher) {}
 };
 
 // cache impl stuff
@@ -59,7 +71,7 @@ Cache::Cache(size_type maxmem,
             float max_load_factor,
             Evictor* evictor,
             hash_func hasher)
-    : pImpl_(new Impl()) {}
+    : pImpl_(new Impl(maxmem, max_load_factor, evictor, hasher)) {}
 
 Cache::~Cache() = default;
 

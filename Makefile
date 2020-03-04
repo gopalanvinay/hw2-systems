@@ -1,13 +1,14 @@
-flags = -Wno-c++11-extensions -std=c++17 -Wall -Werror -pedantic
+flags = -std=c++17 -Wall -Werror -pedantic -O3
+CXX = clang++
 
 all:
 	test
 
 clean:
-	rm *.o
+	rm -rf *.o test
 
 test: cache_lib.o
-	clang++ ${flags} -o $@ $^ test_cache_lib.cc
+	${CXX} ${flags} -o $@ $^ test_cache_lib.cc
 
 %.o : %.cc %.hh
-	clang++ ${flags} -c -o $@ $<
+	${CXX} ${flags} -c -o $@ $<
