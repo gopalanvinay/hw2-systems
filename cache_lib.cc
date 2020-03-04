@@ -47,9 +47,7 @@ class Cache::Impl {
 
     // Delete all data from the cache
     void reset() {
-        for (auto it : table) {
-            assert(del(it.first) ==  true);
-        }
+        table.clear();
     }
 };
 
