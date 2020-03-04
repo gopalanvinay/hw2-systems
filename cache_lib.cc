@@ -1,5 +1,4 @@
 #include "cache.hh"
-//#include "cache_lib.hh"
 #include <assert.h>
 #include <unordered_map>
 
