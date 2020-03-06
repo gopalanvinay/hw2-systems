@@ -1,15 +1,20 @@
 #include "cache.hh"
 #include <assert.h>
 #include <unordered_map>
+#include <algorithm>
+#include <functional>
+
+
 
 class Cache::Impl {
  private:
    // private data structure
    Evictor* evictor;
    float max_load_factor;
-   hash_func hasher;
    size_type maxmem;
-   std::unordered_map<key_type, val_type, hash_func> table(maxmem, hasher);
+   size_type cur_size = 0;
+   hash_func hasher;
+   std::unordered_map<key_type, val_type, hash_func> table;
 
  public:
     // Add a <key, value> pair to the cache.
@@ -20,8 +25,8 @@ class Cache::Impl {
     // isn't inserted to the cache.
     void set(key_type key, val_type val, size_type size) {
         if (space_used() + size <= maxmem)  {
-            //val_type to_copy = val;
-            table[key] = val; // check this behavior
+            cur_size += size;
+            table[key] = val;
         }
         // don't add into hash table
     }
@@ -41,12 +46,13 @@ class Cache::Impl {
 
     // Delete an object from the cache, if it's still there
     bool del(key_type key) {
+        //cur_size -= size;
         return table.erase(key);
     }
 
     // Compute the total amount of memory used up by all cache values (not keys)
     size_type space_used() const {
-        return table.size() * sizeof(val_type); // nope
+        return cur_size;
     }
 
     // Delete all data from the cache
@@ -60,7 +66,7 @@ class Cache::Impl {
           hash_func hasher) : maxmem(maxmem),
                 max_load_factor(max_load_factor),
                 evictor(evictor),
-                hasher(hasher) {}
+                table(std::unordered_map<key_type, val_type, hash_func> (100, hasher)) {}
 };
 
 // cache impl stuff
@@ -95,7 +101,6 @@ bool Cache::del(key_type key){
 Cache::size_type Cache::space_used() const {
     return Cache::pImpl_->space_used();
 }
-
 // Delete all data from the cache
 void Cache::reset(){
     Cache::pImpl_->reset();
