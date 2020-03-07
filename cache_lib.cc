@@ -11,11 +11,12 @@ class Cache::Impl {
    Evictor* evictor;
    float max_load_factor;
    size_type maxmem;
-   size_type cur_size = 0;
    hash_func hasher;
+   size_type cur_size = 0;
    std::unordered_map<key_type, val_type, hash_func> table;
 
  public:
+
     // Add a <key, value> pair to the cache.
     // If key already exists, it will overwrite the old value.
     // Both the key and the value are to be deep-copied (not just pointer copied).
@@ -23,7 +24,7 @@ class Cache::Impl {
     // from the cache to accomodate the new value. If unable, the new value
     // isn't inserted to the cache.
     void set(key_type key, val_type val, size_type size) {
-        if (space_used() + size <= maxmem)  {
+        if (space_used() + size <= maxmem) {
             cur_size += size;
             table[key] = val;
         }
@@ -68,7 +69,9 @@ class Cache::Impl {
           hash_func hasher) : maxmem(maxmem),
                 max_load_factor(max_load_factor),
                 evictor(evictor),
-                table(std::unordered_map<key_type, val_type, hash_func> (100, hasher)) {}
+                table(std::unordered_map<key_type, val_type, hash_func> (100, hasher)) {
+                    table.max_load_factor(max_load_factor);
+                }
 };
 
 // cache impl stuff
