@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <functional>
 
+
 class Cache::Impl {
  private:
    // private data structure
@@ -35,7 +36,7 @@ class Cache::Impl {
     val_type get(key_type key, size_type& val_size) const {
         // table.at() returns a reference to the value
         if (table.count(key) != 0) {
-            &val_size = table[key];
+            val_size = sizeof(*table.at(key));
             return table.at(key); // check pointer v reference here
         } else {
             return nullptr;
@@ -44,7 +45,8 @@ class Cache::Impl {
 
     // Delete an object from the cache, if it's still there
     bool del(key_type key) {
-        size_type val_size = sizeof(table[key]);
+        size_type val_size;
+        this -> get(key, val_size);
         cur_size -= val_size;
         return table.erase(key);
     }
@@ -56,6 +58,7 @@ class Cache::Impl {
 
     // Delete all data from the cache
     void reset() {
+        cur_size = 0;
         table.clear();
     }
 
