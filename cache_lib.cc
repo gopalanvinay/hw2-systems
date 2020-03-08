@@ -16,7 +16,6 @@ class Cache::Impl {
    std::unordered_map<key_type, val_type, hash_func> table;
 
  public:
-
     // Add a <key, value> pair to the cache.
     // If key already exists, it will overwrite the old value.
     // Both the key and the value are to be deep-copied (not just pointer copied).
@@ -27,6 +26,14 @@ class Cache::Impl {
         if (space_used() + size <= maxmem) {
             cur_size += size;
             table[key] = val;
+            if (evictor != nullptr)
+                evictor->touch_key(key);
+        } else if (evictor != nullptr) {
+            key_type to_evict = evictor->evict();
+            this -> del(to_evict);
+            cur_size += size;
+            table[key] = val;
+            evictor->touch_key(key);
         }
         // don't add into hash table
     }
@@ -37,6 +44,8 @@ class Cache::Impl {
     val_type get(key_type key, size_type& val_size) const {
         // table.at() returns a reference to the value
         if (table.count(key) != 0) {
+            if (evictor != nullptr)
+                evictor->touch_key(key);
             val_size = sizeof(*table.at(key));
             return table.at(key); // check pointer v reference here
         } else {
