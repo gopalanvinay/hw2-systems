@@ -70,7 +70,7 @@ void test_evict(Cache &obj)
     // maxmem exceeded
     assert(obj.get("d", val_size) == "7");
     assert(obj.get("a", val_size) == nullptr);
-    printf("All set and get tests passed!\n");
+    printf("All evictor tests passed!\n");
 }
 
 
