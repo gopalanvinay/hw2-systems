@@ -1,27 +1,17 @@
-#include "evictor.hh"
-#include <queue>
+#include "fifo_evictor.hh"
 
 
-class Fifo : public Evictor {
- private:
-   // private data structure
-   std::queue<key_type> acsess;                 // empty queue
+Fifo::Fifo(){}
 
- public:
-    // Inform evictor that a certain key has been set or get:
-    virtual void touch_key(const key_type&) {
-        acsess.push();// ?
+void 
+Fifo::touch_key(const key_type& key) {
+        acess.push(key);// ?
 
     }
 
-    // Request evictor for the next key to evict, and remove it from evictor.
-    // If evictor doesn't know what to evict, return an empty key ("").
-    virtual const key_type evict() {
-        key_type to_remove acsess.front();
-        acsess.pop();
+const key_type 
+Fifo::evict() {
+        key_type to_remove = acess.front();
+        acess.pop();
         return to_remove;
     }
-
-
-    Fifo() : { }
-};

@@ -1,4 +1,5 @@
 #include "cache.hh"
+#include "fifo_evictor.hh"
 #include <iostream>
 #include <assert.h>
 
@@ -56,6 +57,22 @@ void test_reset(Cache &obj)
     printf("All reset tests passed!\n");
 }
 
+void test_evict(Cache &obj)
+{
+    Cache::size_type val_size;
+    obj.set("a","1",1);
+    assert(obj.get("a", val_size) == "1");
+    obj.set("b","3",1);
+    assert(obj.get("b", val_size) == "3");
+    obj.set("c","5",1);
+    assert(obj.get("c", val_size) == "5");
+    obj.set("d","7",1);
+    // maxmem exceeded
+    assert(obj.get("d", val_size) == "7");
+    assert(obj.get("a", val_size) == nullptr);
+    printf("All set and get tests passed!\n");
+}
+
 
 // Main
 int main()
@@ -77,6 +94,13 @@ int main()
     };
     Cache obj_hash(3, 0.75, nullptr, my_hash);
     test_set_and_get(obj_hash);
+
+
+    Fifo* evictor = new Fifo();
+    Cache obj_evict(3, 0.6, evictor, my_hash);
+    test_evict(obj_evict);
+
+    // test_set_and_get(obj_evict);
 
     return 0;
 }
