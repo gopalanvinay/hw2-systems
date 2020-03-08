@@ -23,7 +23,7 @@ class Cache::Impl {
         // from the cache to accomodate the new value. If unable, the new value
         // isn't inserted to the cache.
         void set(key_type key, val_type val, size_type size) {
-            if (space_used() + size <= maxmem) {
+            if (space_used() + size <= maxmem || table.count(key) != 0) {
                 cur_size += size;
                 table[key] = val;
                 if (evictor != nullptr)
