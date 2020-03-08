@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <functional>
 
+#define BUCKET_COUNT 100 
 
 class Cache::Impl {
     private:
@@ -78,7 +79,7 @@ class Cache::Impl {
               hash_func hasher) : maxmem(maxmem),
                     max_load_factor(max_load_factor),
                     evictor(evictor),
-                    table(std::unordered_map<key_type, val_type, hash_func> (100, hasher)) {
+                    table(std::unordered_map<key_type, val_type, hash_func> (BUCKET_COUNT, hasher)) {
                         table.max_load_factor(max_load_factor);
                     }
 };
