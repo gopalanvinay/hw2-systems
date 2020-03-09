@@ -6,7 +6,7 @@
 We chose to implement our cache by using an unordered_map as a private member in our Impl class because the unordered_map in the STL has most of the functionality required for the project and uses optimal implementations of hashing, rehashing, dynamic resizing and collision-handling.
 
 ## Part 2: Testing
-All tests are available in test_cache_lib.cc. Run  `make test`  to compile all necessary files following which run `./test` to run all tests.
+All tests are available in test_cache_lib.cc. Run  `make`  to compile all necessary files following which run `./test` to run all tests.
 
 ## Part 3: Performance
 In order to allow users to pass in a custom hash function, we used the hasher function passed in the cache constructor to construct an unordered_map with that hasher inside the Impl constructor. We added two basic hash objects. One that just hashes the key based on its length and one that uses XOR and byte shifts to more optimally hash keys and confirmed our implementation with verbose tests. While our code completely supports the ability to pass custom hash functions, the default hash function in the STL is fully sufficient.
