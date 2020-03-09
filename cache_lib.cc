@@ -4,7 +4,10 @@
 #include <algorithm>
 #include <functional>
 
-#define BUCKET_COUNT 100 
+#define BUCKET_COUNT 10
+
+// dev  
+// #include <iostream>
 
 class Cache::Impl {
     private:
@@ -45,9 +48,17 @@ class Cache::Impl {
         val_type get(key_type key, size_type& val_size) const {
             // table.at() returns a reference to the value
             if (table.count(key) != 0) {
+
+                // testing resizing with max_load_factor stuff
+                /*
+                int x = this -> get_bucket_count();
+                std::cout << x << std::endl;
+                */
+
                 if (evictor != nullptr)
                     evictor->touch_key(key);
                 val_size = sizeof(*table.at(key));
+
                 return table.at(key);
             } else {
                 return nullptr;
@@ -72,6 +83,14 @@ class Cache::Impl {
             cur_size = 0;
             table.clear();
         }
+
+        // This function is used to test the resizing using max_load_factor
+        
+        /*
+        int get_bucket_count() const{ 
+        return table.bucket_count();
+        }
+        */
 
         Impl(size_type maxmem,
               float max_load_factor,
