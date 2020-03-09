@@ -3,7 +3,6 @@
 #include <iostream>
 #include <assert.h>
 
-
 void test_set_and_get(Cache &obj, bool ev = false)
 {
     Cache::size_type val_size;
@@ -101,10 +100,24 @@ int main()
     test_harness(0.75);
 
     printf("Cache Functions with Hash Function\n");
-    auto my_hash = [](std::string const& foo) {
-        return foo.length();
+    auto count_hash = [](std::string const& key) {
+        return key.length();
     };
-    test_harness(0.75, nullptr, my_hash);
+
+    test_harness(0.75, nullptr, count_hash);
+    // SAX hashing function
+    //https://www.daniweb.com/programming/software-development/threads/231987/string-hash-function
+    auto hash_sum = [](std::string const& key) {
+        unsigned hashVal = 0;
+        for (int x = 0; x < key.length(); ++x) {
+            hashVal ^= (hashVal << 5) +
+                       (hashVal >> 2) +
+                       key[x];
+        }
+    return hashVal % 10;
+    };
+    test_harness(0.75, nullptr, hash_sum);
+
 
     printf("Cache Functions with Evictor\n");
     Fifo* evictor = new Fifo();
