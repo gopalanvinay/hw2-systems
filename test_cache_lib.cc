@@ -4,7 +4,7 @@
 #include <assert.h>
 
 
-void test_set_and_get(Cache &obj)
+void test_set_and_get(Cache &obj, bool ev = false)
 {
     Cache::size_type val_size;
     obj.set("a","1",1);
@@ -16,7 +16,11 @@ void test_set_and_get(Cache &obj)
     obj.set("c","10",2);
     assert(obj.get("c", val_size) == "10"); // change key
     obj.set("d","7",1);
-    assert(obj.get("d", val_size) == nullptr);     // maxmem exceeded
+    if (!ev) {
+        assert(obj.get("d", val_size) == nullptr);     // maxmem exceeded
+    } else {
+        assert(obj.get("a", val_size) == nullptr);     // evictor policy working
+    }
     printf("\tAll set and get tests passed!\n");
 }
 
@@ -76,58 +80,37 @@ void test_evict(Cache &obj)
     printf("\tAll evictor tests passed!\n");
 }
 
+void test_harness(float b = 0.75, Evictor* c = nullptr, Cache::hash_func d = std::hash<key_type>()) {
+    Cache obj_set(3, b, c, d);
+    test_set_and_get(obj_set, (c != nullptr));
+
+    Cache obj_del(25, b, c, d);
+    test_del(obj_del);
+
+    Cache obj_empty(5, b, c, d);
+    test_space_used(obj_empty);
+
+    Cache obj_reset(4, b, c, d);
+    test_reset(obj_reset);
+}
 
 // Main
 int main()
 {
     printf("Cache Functions\n");
-    Cache obj_set(3);
-    test_set_and_get(obj_set);
-
-    Cache obj_del(25);
-    test_del(obj_del);
-
-    Cache obj_empty(5);
-    test_space_used(obj_empty);
-
-    Cache obj_reset(4);
-    test_reset(obj_reset);
+    test_harness(0.75);
 
     printf("Cache Functions with Hash Function\n");
     auto my_hash = [](std::string const& foo) {
         return foo.length();
     };
-    Cache obj_hash(3, 0.75, nullptr, my_hash);
-    test_set_and_get(obj_hash);
-
-    Cache obj_hashset(3, 0.75, nullptr, my_hash);
-    test_set_and_get(obj_hashset);
-
-    Cache obj_hashdel(25, 0.75, nullptr, my_hash);
-    test_del(obj_hashdel);
-
-    Cache obj_hashempty(5, 0.75, nullptr, my_hash);
-    test_space_used(obj_hashempty);
-
-    Cache obj_hashreset(4, 0.75, nullptr, my_hash);
-    test_reset(obj_hashreset);
+    test_harness(0.75, nullptr, my_hash);
 
     printf("Cache Functions with Evictor\n");
     Fifo* evictor = new Fifo();
     Cache obj_evict(3, 0.6, evictor);
     test_evict(obj_evict);
+    test_harness(0.75, evictor);
 
-    Cache obj_evictset(3, 0.75, nullptr, my_hash);
-    test_set_and_get(obj_evictset);
-
-    Cache obj_evictdel(25, 0.75, nullptr, my_hash);
-    test_del(obj_evictdel);
-
-    Cache obj_evictempty(5, 0.75, nullptr, my_hash);
-    test_space_used(obj_evictempty);
-
-    Cache obj_evictreset(4, 0.75, nullptr, my_hash);
-    test_reset(obj_evictreset);
-    
     return 0;
 }
