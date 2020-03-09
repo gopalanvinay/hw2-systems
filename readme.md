@@ -1,6 +1,6 @@
 # Homework 2 Hash it out
 
-### This project was completed by Eric Boettner and Vinay Gopalan. This project deals with designing a generic look-aside cache.
+#### This project was completed by Eric Boettner and Vinay Gopalan. This project deals with designing a generic look-aside cache.
 
 ## Part 1: Basic Cache Operations
 We chose to implement our cache by using an unordered_map as a private member in our Impl class because the unordered_map in the STL has most of the functionality required for the project and uses optimal implementations of hashing, rehashing, dynamic resizing and collision-handling.
